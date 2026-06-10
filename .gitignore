@@ -1,0 +1,7 @@
+v分隔符env/
+venv/
+.env
+*.sqlite3
+__pycache__/
+*.pyc
+.vscode/

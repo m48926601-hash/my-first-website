@@ -1,0 +1,103 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الرئيسية | منصة الرياضيين</title>
+    <style>
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            /* استدعاء صورة الخلفية من مسار الجانغو الصحيح */
+            background-image: linear-gradient(rgba(44, 62, 80, 0.7), rgba(44, 62, 80, 0.7)),
+            url("{% static 'images/bg_home.jpg' %}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        /* كرت تسجيل الدخول الموسط مع تأثير شفاف أنيق */
+        .login-container {
+            background: rgba(255, 255, 255, 0.92);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            box-sizing: border-box;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .login-container h1 {
+            color: #27ae60;
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .login-container p {
+            color: #2c3e50;
+            font-size: 18px;
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+
+        /* تنسيق الأزرار بشكل فخم وعريض */
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: bold;
+            transition: 0.3s;
+            box-sizing: border-box;
+        }
+
+        .btn-coach {
+            background-color: #2c3e50;
+            color: white;
+            border: 2px solid #2c3e50;
+        }
+
+        .btn-coach:hover {
+            background-color: #1a252f;
+            box-shadow: 0 4px 10px rgba(44, 62, 80, 0.4);
+        }
+
+        .btn-trainee {
+            background-color: #3498db;
+            color: white;
+            border: 2px solid #3498db;
+        }
+
+        .btn-trainee:hover {
+            background-color: #2980b9;
+            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.4);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="login-container">
+        <h1>أهلاً بكم في نادي .... الرياضي 💪</h1>
+        <p>تسجيل الدخول كـ:</p>
+
+        <a href="/coach/login/" class="btn btn-coach"> مدرب</a>
+        <a href="/trainee/login/" class="btn btn-trainee"> متدرب</a>
+    </div>
+
+</body>
+
+</html>

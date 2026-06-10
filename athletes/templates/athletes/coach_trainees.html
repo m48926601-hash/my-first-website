@@ -1,0 +1,214 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <title>قائمة المتدربين | نادي Haarlem الرياضي</title>
+    <style>
+        /* التنسيق الأساسي الثابت لمنع أي تداخل */
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* القائمة الجانبية الثابتة تماماً على اليمين */
+        .sidebar {
+            width: 250px;
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #3498db;
+            width: 100%;
+        }
+
+        .coach-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 3px solid #3498db;
+            object-fit: cover;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .sidebar-menu a {
+            color: white;
+            text-decoration: none;
+            padding: 12px 10px;
+            border-radius: 5px;
+            transition: 0.3s;
+            display: block;
+            text-align: right;
+            font-size: 16px;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #3498db;
+        }
+
+        .logout-btn {
+            margin-top: auto;
+            background-color: #c0392b;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            text-align: center;
+            text-decoration: none;
+            display: block;
+            width: 100%;
+            font-weight: bold;
+        }
+
+        /* المحتوى الرئيسي: قمنا بدفعه مسافة أمان 280px عن اليمين ليتسع بالكامل */
+        .main-content {
+            flex-grow: 1;
+            padding: 30px;
+            overflow-y: auto;
+            margin-right: 280px;
+            text-align: right;
+        }
+
+        /* اللوحة البيضاء الخلفية الحاضنة للجدول */
+        .dashboard-panel {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .dashboard-panel h2 {
+            margin: 0 0 20px 0;
+            font-size: 22px;
+            color: #2c3e50;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #3498db;
+        }
+
+        /* تنسيق الجدول الاحترافي العريض */
+        .trainee-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 15px;
+            text-align: right;
+            margin-top: 10px;
+        }
+
+        .trainee-table th {
+            padding: 15px 12px;
+            color: #7f8c8d;
+            border-bottom: 2px solid #e0e0e0;
+            font-weight: bold;
+            background-color: #f8f9fa;
+        }
+
+        .trainee-table td {
+            padding: 15px 12px;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: middle;
+        }
+
+        .trainee-link {
+            color: #2c3e50;
+            text-decoration: none;
+            font-weight: bold;
+            border-bottom: 2px dashed #3498db;
+            padding-bottom: 2px;
+        }
+
+        .trainee-link:hover {
+            color: #3498db;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="sidebar">
+        <div class="sidebar-header">نادي .... الرياضي 💪</div>
+        <img src="{% static 'images/coach.jpg' %}" alt="الكابتن" class="coach-img">
+        <div class="sidebar-menu">
+            <a href="/coach/">🏠 الرئيسية</a>
+            <a href="/coach/trainees/" class="active">👥 المتدربون</a>
+            <a href="/coach/training/">📅 البرامج التدريبية</a>
+            <a href="/coach/diet/">🍎 البرامج الغذائية</a>
+        </div>
+        <a href="/coach/logout/" class="logout-btn">خروج 🔙</a>
+    </div>
+
+    <div class="main-content">
+        <div class="dashboard-panel">
+            <h2>👥 جميع المتدربين المسجلين في النادي</h2>
+
+            <table class="trainee-table">
+                <thead>
+                    <tr>
+                        <th>اسم المتدرب</th>
+                        <th>البريد الإلكتروني / الجوال</th>
+                        <th>الوزن الحالي</th>
+                        <th>الوزن المستهدف</th>
+                        <th>نهاية الاشتراك</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for t in all_trainees %}
+                    <tr>
+                        <td>
+                            <a href="/coach/trainees/{{ t.id }}/" class="trainee-link">{{ t.name }}</a>
+                        </td>
+                        <td style="color: #7f8c8d;">{{ t.phone_number|default:"غير مسجل" }}</td>
+                        <td><span style="color: #27ae60; font-weight: bold;">{{ t.current_weight }} كغ</span></td>
+                        <td>{{ t.target_weight }} كغ</td>
+                        <td>{{ t.end_date|date:"Y-m-d" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" style="text-align: center; color: #7f8c8d;">لا يوجد أي متدرب مسجل حتى الآن.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</body>
+
+</html>

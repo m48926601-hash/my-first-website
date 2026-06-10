@@ -1,0 +1,288 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <title>إضافة متدرب جديد | نادي Haarlem الرياضي</title>
+    <style>
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* القائمة الجانبية الثابتة على اليمين */
+        .sidebar {
+            width: 250px;
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #3498db;
+            width: 100%;
+        }
+
+        .coach-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 3px solid #3498db;
+            object-fit: cover;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .sidebar-menu a {
+            color: white;
+            text-decoration: none;
+            padding: 12px 10px;
+            border-radius: 5px;
+            transition: 0.3s;
+            display: block;
+            text-align: right;
+            font-size: 16px;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #3498db;
+        }
+
+        .logout-btn {
+            margin-top: auto;
+            background-color: #c0392b;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            text-align: center;
+            text-decoration: none;
+            display: block;
+            width: 100%;
+            font-weight: bold;
+        }
+
+        /* المحتوى الرئيسي الموسط بالكامل */
+        .main-content {
+            flex-grow: 1;
+            padding: 30px;
+            overflow-y: auto;
+            margin-right: 250px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        /* لوحة الاستمارة العريضة المنسقة */
+        .form-panel {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            max-width: 800px;
+            box-sizing: border-box;
+        }
+
+        .form-panel h2 {
+            margin: 0 0 30px 0;
+            font-size: 26px;
+            color: #2c3e50;
+            text-align: center;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #27ae60;
+        }
+
+        /* تقسيم الحقول إلى صفوف مزدوجة لترتيب المساحة */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            text-align: right;
+        }
+
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 18px;
+        }
+
+        /* تصميم الحقول بخط Times New Roman */
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 16px;
+            background-color: #fafafa;
+            transition: 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: #27ae60;
+            outline: none;
+            background-color: #fff;
+            box-shadow: 0 0 5px rgba(39, 174, 96, 0.2);
+        }
+
+        /* حاوي الزر أسفل اليسار */
+        .button-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 25px;
+        }
+
+        .btn-submit {
+            background-color: #27ae60;
+            color: white;
+            padding: 12px 35px;
+            border: none;
+            border-radius: 5px;
+            font-family: 'Times New Roman', Times, serif;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 18px;
+            transition: 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-submit:hover {
+            background-color: #219653;
+            box-shadow: 0 4px 10px rgba(39, 174, 96, 0.3);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="sidebar">
+        <div class="sidebar-header">نادي ...... الرياضي 💪</div>
+        <img src="{% static 'images/coach.jpg' %}" alt="الكابتن" class="coach-img">
+        <div class="sidebar-menu">
+            <a href="/coach/">🏠 الرئيسية</a>
+            <a href="/coach/trainees/" class="active">👥 المتدربون</a>
+            <a href="/coach/training/">📅 البرامج التدريبية</a>
+            <a href="/coach/diet/">🍎 البرامج الغذائية</a>
+        </div>
+        <a href="/coach/logout/" class="logout-btn">خروج 🔙</a>
+    </div>
+
+    <div class="main-content">
+        <div class="form-panel">
+            <h2>👥 إضافة متدرب جديد للنادي</h2>
+
+            <form method="POST" action="">
+                {% csrf_token %}
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>اسم المتدرب الكامل:</label>
+                        <input type="text" class="form-control" name="name" required
+                            placeholder="أدخل اسم المتدرب الحقيقي...">
+                    </div>
+                    <div class="form-group">
+                        <label>رقم الهاتف / الجوال:</label>
+                        <input type="text" class="form-control" name="phone_number" placeholder="مثال: 05xxxxxxx">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>اسم المستخدم (الحساب):</label>
+                        <input type="text" class="form-control" name="username" required
+                            placeholder="اسم الحساب لتسجيل الدخول...">
+                    </div>
+                    <div class="form-group">
+                        <label>كلمة المرور:</label>
+                        <input type="password" class="form-control" name="password" required
+                            placeholder="كلمة المرور الخاصة بالمتدرب...">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>الطول (سم):</label>
+                        <input type="number" class="form-control" name="height" placeholder="مثال: 175">
+                    </div>
+                    <div class="form-group">
+                        <label>الوزن الحالي (كغ):</label>
+                        <input type="number" step="0.1" class="form-control" name="current_weight"
+                            placeholder="مثال: 80.5">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>الوزن المستهدف (كغ):</label>
+                        <input type="number" step="0.1" class="form-control" name="target_weight"
+                            placeholder="مثال: 70">
+                    </div>
+                    <div class="form-group">
+                        <label>التكلفة الشهرية ($):</label>
+                        <input type="number" class="form-control" name="monthly_cost"
+                            placeholder="قيمة الاشتراك الشهري...">
+                    </div>
+                </div>
+
+                <div class="form-group full-width" style="margin-bottom: 20px;">
+                    <label>الملاحظات الصحية أو الأهداف العامة:</label>
+                    <textarea class="form-control" name="notes" rows="4"
+                        placeholder="اكتب هنا أي ملاحظات إصابات، أمراض، أو أهداف خاصة باللاعب..."></textarea>
+                </div>
+
+                <div class="button-container">
+                    <button type="submit" class="btn-submit">➕ تسجيل وإضافة المتدرب</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</body>
+
+</html>
