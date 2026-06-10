@@ -66,6 +66,7 @@ def trainees_list_view(request):
     all_trainees = Trainee.objects.all().order_by('-start_date')
     return render(request, 'athletes/coach_trainees.html', {'all_trainees': all_trainees})
 # دالة إضافة متدرب جديد وتوليد حسابه تلقائياً
+# دالة إضافة متدرب جديد وتوليد حسابه تلقائياً مع استقبال التواريخ
 @login_required(login_url='coach_login')
 def add_trainee_view(request):
     if request.method == 'POST':
@@ -73,51 +74,38 @@ def add_trainee_view(request):
         user_name = request.POST.get('username')
         pass_word = request.POST.get('password')
         
-        # إنشاء حساب مستخدم حقيقي في النظام للمتدرب
+        # فحص الحماية لمنع الـ IntegrityError في حال تكرر الـ username بالخطأ
+        if User.objects.filter(username=user_name).exists():
+            return render(request, 'athletes/add_trainee.html', {
+                'error': 'اسم المستخدم هذا محجوز مسبقاً! الرجاء كتابة اسم مستخدم آخر فريد للمتدرب الجديد.'
+            })
+
+        # إنشاء حساب مستخدم حقيقي في النظام للمتدرب بناءً على الاسم المدخل الحقيقي
         new_user = User.objects.create_user(username=user_name, password=pass_word)
         
-        # 2. سحب باقي بيانات المتدرب من الاستمارة
+        # 2. استقبال التواريخ من الحقول الجديدة بالواجهة مباشرة
+        start_date = request.POST.get('start_date')
+        end_date = request.POST.get('end_date')
+        
+        # 3. حفظ ملف المتدرب الكامل وربطه بالحساب المولد
         Trainee.objects.create(
-            user=new_user, # ربط ملف المتدرب بحسابه الجديد فوراً
+            user=new_user, 
             name=request.POST.get('name'),
             phone_number=request.POST.get('phone_number'),
-            height=request.POST.get('height'),
-            current_weight=request.POST.get('current_weight'),
-            target_weight=request.POST.get('target_weight'),
-            start_date=request.POST.get('start_date'),
-            end_date=request.POST.get('end_date'),
-            monthly_cost=request.POST.get('monthly_cost'),
-            coach_notes=request.POST.get('coach_notes')
+            height=request.POST.get('height') or 0,
+            current_weight=request.POST.get('current_weight') or 0,
+            target_weight=request.POST.get('target_weight') or 0,
+            start_date=start_date if start_date else timezone.now().date(),
+            end_date=end_date if end_date else timezone.now().date(),
+            monthly_cost=request.POST.get('monthly_cost') or 0,
+            coach_notes=request.POST.get('notes') # تطابق تام مع حقل الـ HTML
         )
         # بعد الحفظ بنجاح، أرجع الكوتش للوحة التحكم الرئيسية
         return redirect('coach_dashboard')
         
     return render(request, 'athletes/add_trainee.html')
-@login_required(login_url='coach_login')
-def add_training_view(request):
-    # سحب كل المتدربين لنعرضهم بقائمة منسدلة ليختار الكوتش لمين البرنامج
-    all_trainees = Trainee.objects.all()
-    
-    if request.method == 'POST':
-        trainee_id = request.POST.get('trainee_id')
-        title = request.POST.get('title')
-        exercises_details = request.POST.get('exercises_details')
-        
-        # نجلب ملف المتدرب بناءً على اختياره من القائمة
-        selected_trainee = Trainee.objects.get(id=trainee_id)
-        
-        # إنشاء البرنامج التدريبي وربطه بالمتدرب
-        TrainingProgram.objects.create(
-            trainee=selected_trainee,
-            title=title,
-            exercises_details=exercises_details
-        )
-        return redirect('coach_dashboard') # العودة للوحة بعد الحفظ
-        
-    return render(request, 'athletes/add_training.html', {'all_trainees': all_trainees})
+
 # دالة عرض ملف المتدرب المفصل للكوتش
-@login_required(login_url='coach_login')
-# دالة عرض ملف المتدرب المفصل للكوتش (محدثة لتشمل الغذاء)
 @login_required(login_url='coach_login')
 def trainee_profile_view(request, trainee_id):
     trainee = Trainee.objects.get(id=trainee_id)
@@ -220,3 +208,16 @@ def edit_trainee_view(request, trainee_id):
         return redirect('trainee_profile', trainee_id=trainee.id)
         
     return render(request, 'athletes/edit_trainee.html', {'trainee': trainee})
+# دالة إضافة برنامج تدريبي
+@login_required(login_url='coach_login')
+def add_training_view(request):
+    # سحب كل المتدربين لنعرضهم بقائمة منسدلة ليختار الكوتش لمين البرنامج
+    all_trainees = Trainee.objects.all()
+    
+    if request.method == 'POST':
+        trainee_id = request.POST.get('trainee_id')
+        title = request.POST.get('title')
+        exercises_details = request.POST.get('exercises_details')
+        
+        # نجلب ملف المتدرب بناءً على اختياره من القائمة
+        selected_trainee = Trainee.objects.get(id=trainee_id)

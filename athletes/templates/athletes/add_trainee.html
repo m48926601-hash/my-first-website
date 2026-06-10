@@ -101,8 +101,9 @@
             overflow-y: auto;
             margin-right: 250px;
             display: flex;
-            justify-content: center;
-            align-items: flex-start;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
         }
 
         /* لوحة الاستمارة العريضة المنسقة */
@@ -202,7 +203,7 @@
 <body>
 
     <div class="sidebar">
-        <div class="sidebar-header">نادي ...... الرياضي 💪</div>
+        <div class="sidebar-header">نادي Haarlem الرياضي 💪</div>
         <img src="{% static 'images/coach.jpg' %}" alt="الكابتن" class="coach-img">
         <div class="sidebar-menu">
             <a href="/coach/">🏠 الرئيسية</a>
@@ -216,6 +217,13 @@
     <div class="main-content">
         <div class="form-panel">
             <h2>👥 إضافة متدرب جديد للنادي</h2>
+
+            {% if error %}
+            <div
+                style="background-color: #f8d7da; color: #721c24; padding: 12px; border-radius: 5px; margin-bottom: 25px; text-align: center; border: 1px solid #f5c6cb; font-size: 16px; font-weight: bold;">
+                ⚠️ {{ error }}
+            </div>
+            {% endif %}
 
             <form method="POST" action="">
                 {% csrf_token %}
@@ -270,9 +278,20 @@
                     </div>
                 </div>
 
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>تاريخ بدء الاشتراك:</label>
+                        <input type="date" class="form-control" name="start_date" required>
+                    </div>
+                    <div class="form-group">
+                        <label>تاريخ انتهاء الاشتراك:</label>
+                        <input type="date" class="form-control" name="end_date" required>
+                    </div>
+                </div>
+
                 <div class="form-group full-width" style="margin-bottom: 20px;">
                     <label>الملاحظات الصحية أو الأهداف العامة:</label>
-                    <textarea class="form-control" name="notes" rows="4"
+                    <textarea class="form-control" name="notes" rows="3"
                         placeholder="اكتب هنا أي ملاحظات إصابات، أمراض، أو أهداف خاصة باللاعب..."></textarea>
                 </div>
 
