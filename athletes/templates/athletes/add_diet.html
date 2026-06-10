@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>إدارة البرامج الغذائية | نادي Haarlem الرياضي</title>
+    <title>إضافة برنامج غذائي | نادي Haarlem</title>
     <style>
         body {
             font-family: 'Times New Roman', Times, serif;
@@ -16,7 +16,6 @@
             overflow: hidden;
         }
 
-        /* القائمة الجانبية الثابتة على اليمين */
         .sidebar {
             width: 250px;
             background-color: #2c3e50;
@@ -49,7 +48,6 @@
             border: 3px solid #3498db;
             object-fit: cover;
             margin-bottom: 30px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
         }
 
         .sidebar-menu {
@@ -94,18 +92,17 @@
             font-weight: bold;
         }
 
-        /* المحتوى الرئيسي المتمركز والمحاذي للوسط */
         .main-content {
             flex-grow: 1;
-            padding: 40px 30px;
+            padding: 30px;
             overflow-y: auto;
             margin-right: 250px;
             display: flex;
-            justify-content: center;
-            align-items: flex-start;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
         }
 
-        /* لوحة الفورم الموسطة */
         .form-panel {
             background: white;
             padding: 40px;
@@ -126,19 +123,18 @@
         }
 
         .form-group {
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             text-align: right;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             font-weight: bold;
             color: #2c3e50;
             font-size: 18px;
         }
 
-        /* الحقول المحدثة بالخط والتنسيق المطلوب */
         .form-control {
             width: 100%;
             padding: 12px;
@@ -158,17 +154,10 @@
             box-shadow: 0 0 5px rgba(230, 126, 34, 0.2);
         }
 
-        /* زر الحفظ بالزاوية اليسارية السفلية للفورم */
-        .button-container {
-            display: flex;
-            justify-content: flex-end;
-            margin-top: 20px;
-        }
-
         .btn-submit {
             background-color: #e67e22;
             color: white;
-            padding: 12px 30px;
+            padding: 12px 35px;
             border: none;
             border-radius: 5px;
             font-family: 'Times New Roman', Times, serif;
@@ -176,22 +165,19 @@
             cursor: pointer;
             font-size: 18px;
             transition: 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
+            width: 100%;
+            margin-top: 10px;
         }
 
         .btn-submit:hover {
             background-color: #d35400;
-            box-shadow: 0 4px 10px rgba(230, 126, 34, 0.3);
         }
     </style>
 </head>
 
 <body>
-
     <div class="sidebar">
-        <div class="sidebar-header">نادي ...... الرياضي 💪</div>
+        <div class="sidebar-header">نادي Haarlem الرياضي 💪</div>
         <img src="{% static 'images/coach.jpg' %}" alt="الكابتن" class="coach-img">
         <div class="sidebar-menu">
             <a href="/coach/">🏠 الرئيسية</a>
@@ -206,25 +192,42 @@
         <div class="form-panel">
             <h2>🍎 إدارة البرنامج الغذائي والوجبات</h2>
 
-            <form method="POST" action="">
+            {% if error %}
+            <div
+                style="background-color: #f8d7da; color: #721c24; padding: 12px; border-radius: 5px; margin-bottom: 25px; text-align: center; border: 1px solid #f5c6cb; font-weight: bold;">
+                ⚠️ {{ error }}
+            </div>
+            {% endif %}
+
+            <form method="POST">
                 {% csrf_token %}
+
+                <div class="form-group">
+                    <label>اختر المتدرب (صاحب النظام):</label>
+                    <select name="trainee_id" class="form-control" required>
+                        <option value="" disabled selected>-- اضغط هنا لاختيار المتدرب --</option>
+                        {% for trainee in all_trainees %}
+                        <option value="{{ trainee.id }}">{{ trainee.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
                 <div class="form-group">
                     <label>اسم النظام الغذائي:</label>
-                    <input type="text" class="form-control" name="diet_name"
+                    <input type="text" name="title" class="form-control" required
                         placeholder="مثال: كيتو دايت، نظام عالي البروتين، تنشيف...">
                 </div>
+
                 <div class="form-group">
                     <label>تقسيم الوجبات اليومية (فطور - غداء - عشاء):</label>
-                    <textarea class="form-control" name="diet_details" rows="6"
+                    <textarea name="meals_details" class="form-control" rows="6" required
                         placeholder="اكتب تفاصيل السعرات الحرارية والمكونات لكل وجبة..."></textarea>
                 </div>
-                <div class="button-container">
-                    <button type="submit" class="btn-submit">💾 حفظ البرنامج الغذائي</button>
-                </div>
+
+                <button type="submit" class="btn-submit">💾 حفظ البرنامج الغذائي</button>
             </form>
         </div>
     </div>
-
 </body>
 
 </html>
