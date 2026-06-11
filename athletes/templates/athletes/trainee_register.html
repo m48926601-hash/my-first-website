@@ -1,0 +1,186 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <title>إنشاء حساب متدرب | نادي Haarlem</title>
+    <style>
+        /* التنسيق الجديد الداعم للشاشات الطويلة */
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            background-image: url("{% static 'images/bg.jpg' %}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            /* لتثبيت الخلفية وقت السكرول */
+            margin: 0;
+            padding: 40px 20px;
+            /* إعطاء مسافة من فوق وتحت */
+            display: flex;
+            min-height: 100vh;
+            /* تغيير من height إلى min-height */
+            align-items: flex-start;
+            /* السماح ببدء المربع من الأعلى وليس المنتصف */
+            justify-content: center;
+            box-sizing: border-box;
+        }
+
+        .login-box {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 500px;
+            /* عرضنا المربع شوي ليرتاحوا الحقول المزدوجة */
+            text-align: center;
+            margin: auto;
+            /* توسيط ذكي */
+        }
+
+        .login-box h2 {
+            color: #2c3e50;
+            margin-top: 0;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            text-align: right;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-family: 'Times New Roman', Times, serif;
+            background-color: #fff;
+        }
+
+        .btn-submit {
+            background-color: #3498db;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+
+        .btn-submit:hover {
+            background-color: #2980b9;
+        }
+
+        .links {
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .links a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-box">
+        <h2>🏋️‍♂️ إنشاء حساب بطل جديد</h2>
+
+        {% if error %}
+        <div style="color: #721c24; background-color: #f8d7da; padding: 10px; border-radius: 5px; margin-bottom: 15px;">
+            {{ error }}
+        </div>
+        {% endif %}
+
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group">
+                <label>الاسم الكامل:</label>
+                <input type="text" name="name" class="form-control" required placeholder="أدخل اسمك الحقيقي...">
+            </div>
+
+            <div class="form-group">
+                <label>رقم الجوال (سيتم استخدامه للدخول):</label>
+                <input type="text" name="phone_number" class="form-control" required placeholder="مثال: 05xxxxxxx">
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <div class="form-group" style="width: 50%;">
+                    <label>الطول (سم):</label>
+                    <input type="number" name="height" class="form-control" required placeholder="مثال: 175">
+                </div>
+                <div class="form-group" style="width: 50%;">
+                    <label>الوزن الحالي (كغ):</label>
+                    <input type="number" step="0.1" name="current_weight" class="form-control" required
+                        placeholder="مثال: 80">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>الوزن المستهدف (كغ):</label>
+                <input type="number" step="0.1" name="target_weight" class="form-control" required
+                    placeholder="مثال: 70">
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <div class="form-group" style="width: 50%;">
+                    <label>تاريخ البدء:</label>
+                    <input type="date" name="start_date" class="form-control" required>
+                </div>
+                <div class="form-group" style="width: 50%;">
+                    <label>تاريخ الانتهاء:</label>
+                    <input type="date" name="end_date" class="form-control" required>
+                </div>
+            </div>
+
+            <hr style="border: 0; border-top: 1px solid #ccc; margin: 20px 0;">
+            <h4 style="text-align: center; color: #2c3e50; margin-bottom: 15px;">📸 صور تطور الجسم (اختياري)</h4>
+
+            <div class="form-group">
+                <label>صورة من الأمام:</label>
+                <input type="file" name="front_image" class="form-control" accept="image/*">
+            </div>
+            <div class="form-group">
+                <label>صورة من الجانب:</label>
+                <input type="file" name="side_image" class="form-control" accept="image/*">
+            </div>
+            <div class="form-group">
+                <label>صورة من الخلف:</label>
+                <input type="file" name="back_image" class="form-control" accept="image/*">
+            </div>
+            <hr style="border: 0; border-top: 1px solid #ccc; margin: 20px 0;">
+
+            <div class="form-group">
+                <label>كلمة المرور:</label>
+                <input type="password" name="password" class="form-control" required
+                    placeholder="اختر كلمة مرور قوية...">
+            </div>
+
+            <button type="submit" class="btn-submit">تسجيل الحساب</button>
+        </form>
+
+        <div class="links">
+            <p>لديك حساب بالفعل؟ <a href="/trainee/login/">سجل دخولك من هنا</a></p>
+            <a href="/">🔙 العودة للرئيسية</a>
+        </div>
+    </div>
+</body>
+
+</html>

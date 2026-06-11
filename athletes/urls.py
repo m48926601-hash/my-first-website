@@ -18,6 +18,7 @@ urlpatterns = [
     path('trainee/login/', views.trainee_login_view, name='trainee_login'),
     path('trainee/dashboard/', views.trainee_dashboard_view, name='trainee_dashboard'),
     path('trainee/logout/', views.trainee_logout_view, name='trainee_logout'),
+    path('trainee/register/', views.trainee_register_view, name='trainee_register'),   
     # السلك الجديد للتعديل:
     path('coach/trainees/<int:trainee_id>/edit/', views.edit_trainee_view, name='edit_trainee'),
 ]

@@ -15,7 +15,11 @@ class Trainee(models.Model):
     monthly_cost = models.FloatField(verbose_name="التكلفة شهرياً", null=True, blank=True)
     
     coach_notes = models.TextField(blank=True, null=True, verbose_name="ملاحظات المدرب (سرية)")
-
+    # حقول الصور الاختيارية (مسموح تكون فاضية null=True, blank=True)
+    front_image = models.ImageField(upload_to='trainees_images/', null=True, blank=True)
+    side_image = models.ImageField(upload_to='trainees_images/', null=True, blank=True)
+    back_image = models.ImageField(upload_to='trainees_images/', null=True, blank=True)
+    
     class Meta:
         verbose_name = "متدرب"
         verbose_name_plural = "المتدربون"

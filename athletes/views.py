@@ -29,18 +29,22 @@ def coach_logout_view(request):
     logout(request)
     return redirect('home')
 
+# دالة تسجيل دخول المتدرب (محدثة لتعمل برقم الجوال)
 def trainee_login_view(request):
     if request.method == 'POST':
-        u = request.POST.get('username')
+        phone = request.POST.get('phone_number') # استلام رقم الجوال
         p = request.POST.get('password')
-        user = authenticate(request, username=u, password=p)
+        
+        # المصادقة باستخدام رقم الجوال كأنه username
+        user = authenticate(request, username=phone, password=p)
+        
         if user is not None:
             login(request, user)
             return redirect('trainee_dashboard')
         else:
-            return render(request, 'athletes/trainee_login.html', {'error': 'اسم المستخدم أو كلمة المرور غير صحيحة'})
+            return render(request, 'athletes/trainee_login.html', {'error': 'رقم الجوال أو كلمة المرور غير صحيحة'})
+            
     return render(request, 'athletes/trainee_login.html')
-
 def trainee_logout_view(request):
     logout(request)
     return redirect('home')
@@ -235,3 +239,47 @@ def add_diet_view(request):
             })
         
     return render(request, 'athletes/add_diet.html', {'all_trainees': all_trainees})
+
+# دالة تسجيل المتدرب (محدثة لاستقبال التواريخ والصور)
+def trainee_register_view(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        phone = request.POST.get('phone_number').strip()
+        password = request.POST.get('password')
+        
+        height = request.POST.get('height') or 0
+        current_weight = request.POST.get('current_weight') or 0
+        target_weight = request.POST.get('target_weight') or 0
+        
+        # سحب التواريخ من الواجهة
+        start_date = request.POST.get('start_date')
+        end_date = request.POST.get('end_date')
+
+        if User.objects.filter(username=phone).exists():
+            return render(request, 'athletes/trainee_register.html', {
+                'error': 'رقم الجوال هذا مسجل مسبقاً! الرجاء تسجيل الدخول أو استخدام رقم آخر.'
+            })
+
+        new_user = User.objects.create_user(username=phone, password=password)
+        
+        # حفظ المتدرب مع استقبال الصور من request.FILES
+        Trainee.objects.create(
+            user=new_user, 
+            name=name,
+            phone_number=phone,
+            height=height,
+            current_weight=current_weight,
+            target_weight=target_weight,
+            start_date=start_date if start_date else timezone.now().date(),
+            end_date=end_date if end_date else timezone.now().date(),
+            monthly_cost=0,
+            coach_notes="تسجيل ذاتي من الموقع - بانتظار تفعيل الكابتن.",
+            front_image=request.FILES.get('front_image'), # الصورة الأمامية
+            side_image=request.FILES.get('side_image'),   # الصورة الجانبية
+            back_image=request.FILES.get('back_image')    # الصورة الخلفية
+        )
+        
+        login(request, new_user)
+        return redirect('trainee_dashboard')
+        
+    return render(request, 'athletes/trainee_register.html')

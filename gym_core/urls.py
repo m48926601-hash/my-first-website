@@ -1,7 +1,13 @@
 from django.contrib import admin
-from django.urls import path, include  # ضفنا كلمة include هون
+from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
-    path('admin/', admin.site.urls), # هاد رابط لوحة التحكم اللي دخلنا عليها قبل شوي
-    path('', include('athletes.urls')), # هاد السطر بيوجه أي زائر للصفحة الرئيسية تبعنا
+    path('admin/', admin.site.urls),
+    path('', include('athletes.urls')),
 ]
+
+# هاد السطر بيسمح بعرض الصور على الموقع
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
