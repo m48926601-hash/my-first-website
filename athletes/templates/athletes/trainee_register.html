@@ -9,34 +9,29 @@
         /* التنسيق الجديد الداعم للشاشات الطويلة */
         body {
             font-family: 'Times New Roman', Times, serif;
-            background-image: url("{% static 'images/bg.jpg' %}");
+            background-image: url("{% static 'images/coach6.PNG' %}");
             background-size: cover;
-            background-position: center;
+            background-position: center top;
+            background-repeat: no-repeat;
             background-attachment: fixed;
-            /* لتثبيت الخلفية وقت السكرول */
             margin: 0;
             padding: 40px 20px;
-            /* إعطاء مسافة من فوق وتحت */
             display: flex;
             min-height: 100vh;
-            /* تغيير من height إلى min-height */
             align-items: flex-start;
-            /* السماح ببدء المربع من الأعلى وليس المنتصف */
             justify-content: center;
             box-sizing: border-box;
         }
 
         .login-box {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.9);
             padding: 40px;
             border-radius: 10px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
             width: 100%;
             max-width: 500px;
-            /* عرضنا المربع شوي ليرتاحوا الحقول المزدوجة */
             text-align: center;
             margin: auto;
-            /* توسيط ذكي */
         }
 
         .login-box h2 {
