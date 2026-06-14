@@ -181,13 +181,133 @@
             white-space: pre-line;
             line-height: 1.6;
         }
+
+        .coach-profile-card {
+            background: #ffffff;
+            padding: 28px;
+            border-radius: 18px;
+            margin-top: 30px;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+            border: 1px solid #edf2f7;
+        }
+
+        .coach-profile-card h2 {
+            margin: 0 0 14px 0;
+            color: #1f2937;
+            font-size: 24px;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .coach-heading-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 14px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #27ae60;
+        }
+
+        .coach-heading-row h2 {
+            margin: 0;
+            padding: 0;
+            border: none;
+            flex: 1;
+        }
+
+        .coach-heading-row img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+            border: 2px solid #27ae60;
+        }
+
+        .coach-intro {
+            color: #374151;
+            font-size: 16px;
+            line-height: 1.8;
+            margin-bottom: 22px;
+        }
+
+        .coach-intro p {
+            margin: 0 0 8px 0;
+        }
+
+        .coach-qualifications {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 24px 0;
+            display: grid;
+            gap: 12px;
+        }
+
+        .coach-qualifications li {
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 14px 16px;
+            color: #334155;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .coach-gallery-section {
+            margin-top: 18px;
+        }
+
+        .coach-gallery-section h3 {
+            margin: 0 0 14px 0;
+            color: #1f2937;
+            font-size: 18px;
+        }
+
+        .coach-gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 14px;
+        }
+
+        .coach-gallery-item {
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+        }
+
+        .coach-gallery-item a {
+            display: block;
+        }
+
+        .coach-gallery-item img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .coach-profile-card {
+                padding: 20px;
+            }
+
+            .coach-profile-card h2 {
+                font-size: 20px;
+            }
+
+            .coach-gallery-item img {
+                height: 190px;
+            }
+        }
     </style>
 </head>
 
 <body>
 
     <div class="sidebar">
-        <div class="sidebar-header">ملفي الرياضي 💪</div>
+        <div class="sidebar-header">منصة الكوتش طارق الرياضية 💪</div>
 
         <img src="{% static 'images/trainee.jpg' %}" alt="البطل" class="gym-player-img">
 
@@ -291,6 +411,83 @@
                             style="width: 150px; height: 200px; background: #ecf0f1; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #7f8c8d; margin: auto;">
                             لا توجد صورة</div>
                         {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="coach-profile-card">
+                <div class="coach-heading-row">
+                    <img src="{% static 'images/coach3.PNG' %}" alt="صورة الكابتن طارق راشد">
+                    <h2>🌟 نبذة عن الكابتن طارق راشد</h2>
+                </div>
+
+                <div class="coach-intro">
+                    <p><strong>Coach Tarek Rashad | كابتن طارق راشد</strong></p>
+                    <p>💪 Transforming Bodies &amp; Building Healthy Lifestyles</p>
+                    <p>💪 متخصص في التدريب والتغذية الرياضية والمتابعة الأونلاين.</p>
+                </div>
+
+                <ul class="coach-qualifications">
+                    <li>🏆 Certified Personal Trainer | مدرب شخصي معتمد</li>
+                    <li>🏆 Certified Fitness Trainer | مدرب لياقة بدنية معتمد</li>
+                    <li>🏆 Sports Nutrition Specialist | أخصائي تغذية رياضية</li>
+                    <li>🏆 Online Coach | مدرب أونلاين معتمد</li>
+                </ul>
+
+                <div class="coach-gallery-section">
+                    <h3>📜 الشهادات والاعتمادات</h3>
+                    <div class="coach-gallery-grid">
+                        <div class="coach-gallery-item">
+                            <a href="{% static 'images/01.jpeg' %}" target="_blank">
+                                <img src="{% static 'images/01.jpeg' %}" alt="الشهادة الأولى">
+                            </a>
+                        </div>
+                        <div class="coach-gallery-item">
+                            <a href="{% static 'images/02.jpeg' %}" target="_blank">
+                                <img src="{% static 'images/02.jpeg' %}" alt="الشهادة الثانية">
+                            </a>
+                        </div>
+                        <div class="coach-gallery-item">
+                            <a href="{% static 'images/03.jpeg' %}" target="_blank">
+                                <img src="{% static 'images/03.jpeg' %}" alt="الشهادة الثالثة">
+                            </a>
+                        </div>
+                        <div class="coach-gallery-item">
+                            <a href="{% static 'images/04.jpeg' %}" target="_blank">
+                                <img src="{% static 'images/04.jpeg' %}" alt="الشهادة الرابعة">
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="coach-gallery-section">
+                    <h3>📸 صور الكابتن</h3>
+                    <div class="coach-gallery-grid">
+                        <div class="coach-gallery-item">
+                            <a href="{% static 'images/coach1.PNG' %}" target="_blank">
+                                <img src="{% static 'images/coach1.PNG' %}" alt="صورة الكابتن 1">
+                            </a>
+                        </div>
+                        <div class="coach-gallery-item">
+                            <a href="{% static 'images/coach2.PNG' %}" target="_blank">
+                                <img src="{% static 'images/coach2.PNG' %}" alt="صورة الكابتن 2">
+                            </a>
+                        </div>
+                        <div class="coach-gallery-item">
+                            <a href="{% static 'images/coach3.PNG' %}" target="_blank">
+                                <img src="{% static 'images/coach3.PNG' %}" alt="صورة الكابتن 3">
+                            </a>
+                        </div>
+                        <div class="coach-gallery-item">
+                            <a href="{% static 'images/coach4.PNG' %}" target="_blank">
+                                <img src="{% static 'images/coach4.PNG' %}" alt="صورة الكابتن 4">
+                            </a>
+                        </div>
+                        <div class="coach-gallery-item">
+                            <a href="{% static 'images/coach5.PNG' %}" target="_blank">
+                                <img src="{% static 'images/coach5.PNG' %}" alt="صورة الكابتن 5">
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -14,7 +14,8 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
+            padding: 24px;
             /* استدعاء صورة الخلفية من مسار الجانغو الصحيح */
             background-image: linear-gradient(rgba(44, 62, 80, 0.7), rgba(44, 62, 80, 0.7)),
             url("{% static 'images/coach6.PNG' %}");
@@ -23,17 +24,85 @@
             background-repeat: no-repeat;
         }
 
+        .home-layout {
+            display: flex;
+            gap: 30px;
+            width: min(1100px, 100%);
+            align-items: stretch;
+        }
+
+        .home-column {
+            flex: 1 1 0;
+            min-width: 0;
+        }
+
         /* كرت تسجيل الدخول الموسط مع تأثير شفاف أنيق */
         .login-container {
             background: rgba(255, 255, 255, 0.92);
             padding: 40px;
-            border-radius: 15px;
+            border-radius: 18px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
             width: 100%;
-            max-width: 450px;
+            max-width: none;
             text-align: center;
             box-sizing: border-box;
             border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .coach-bio-card {
+            background: rgba(255, 255, 255, 0.92);
+            padding: 40px;
+            border-radius: 18px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-sizing: border-box;
+            height: 100%;
+        }
+
+        .coach-bio-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            display: block;
+            margin: 0 auto 18px auto;
+            border: 4px solid rgba(39, 174, 96, 0.2);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+        }
+
+        .coach-bio-title {
+            margin: 0 0 10px 0;
+            color: #1f2937;
+            font-size: 24px;
+            font-weight: 700;
+            line-height: 1.5;
+            text-align: center;
+        }
+
+        .coach-bio-subtitle {
+            margin: 0 0 8px 0;
+            color: #334155;
+            font-size: 15px;
+            line-height: 1.8;
+            text-align: center;
+        }
+
+        .coach-bio-qualifications {
+            list-style: none;
+            padding: 0;
+            margin: 22px 0 0 0;
+            display: grid;
+            gap: 12px;
+        }
+
+        .coach-bio-qualifications li {
+            background: rgba(248, 250, 252, 0.92);
+            border: 1px solid rgba(226, 232, 240, 0.9);
+            border-radius: 12px;
+            padding: 12px 14px;
+            color: #334155;
+            font-size: 15px;
+            line-height: 1.6;
         }
 
         .login-container h1 {
@@ -85,19 +154,63 @@
             background-color: #2980b9;
             box-shadow: 0 4px 10px rgba(52, 152, 219, 0.4);
         }
+
+        @media (max-width: 900px) {
+            .home-layout {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 16px;
+            }
+
+            .coach-bio-card,
+            .login-container {
+                padding: 24px;
+            }
+
+            .coach-bio-title {
+                font-size: 20px;
+            }
+        }
     </style>
 </head>
 
 <body>
 
-    <div class="login-container">
-        <h1>أهلاً بكم في نادي .... الرياضي 💪</h1>
-        <p>تسجيل الدخول كـ:</p>
+    <div class="home-layout">
+        <div class="home-column">
+            <div class="login-container">
+                <h1>أهلاً بكم في منصة الكوتش طارق الرياضية 💪</h1>
+                <p>تسجيل الدخول كـ:</p>
 
-        <a href="/coach/login/" class="btn btn-coach"> مدرب</a>
-        <a href="/trainee/login/" class="btn btn-trainee"> متدرب</a>
-        <a href="/trainee/register/" class="btn" style="background-color: #27ae60; margin-top: 10px; display: block;">➕
-            إنشاء حساب متدرب جديد</a>
+                <a href="/coach/login/" class="btn btn-coach"> مدرب</a>
+                <a href="/trainee/login/" class="btn btn-trainee"> متدرب</a>
+                <a href="/trainee/register/" class="btn"
+                    style="background-color: #27ae60; margin-top: 10px; display: block;">➕
+                    إنشاء حساب متدرب جديد</a>
+            </div>
+        </div>
+
+        <div class="home-column">
+            <div class="coach-bio-card">
+                <img src="{% static 'images/coach3.PNG' %}" alt="Coach Tarek Rashad" class="coach-bio-image">
+
+                <h2 class="coach-bio-title">Coach Tarek Rashad | كابتن طارق راشد</h2>
+
+                <p class="coach-bio-subtitle">💪 Transforming Bodies &amp; Building Healthy Lifestyles</p>
+                <p class="coach-bio-subtitle">متخصص في التدريب والتغذية الرياضية والمتابعة الأونلاين.</p>
+
+                <ul class="coach-bio-qualifications">
+                    <li>🏆 Certified Personal Trainer | مدرب شخصي معتمد</li>
+                    <li>🏆 Certified Fitness Trainer | مدرب لياقة بدنية معتمد</li>
+                    <li>🏆 Sports Nutrition Specialist | أخصائي تغذية رياضية</li>
+                    <li>🏆 Online Coach | مدرب أونلاين معتمد</li>
+                </ul>
+            </div>
+        </div>
     </div>
 
 </body>
