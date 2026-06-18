@@ -243,6 +243,21 @@
             <div class="program-block">
                 <h4>📌 {{ program.title }}</h4>
                 <div class="program-text">{{ program.exercises_details }}</div>
+                {% if program.media_file %}
+                <div style="margin-top: 12px; border-radius: 10px; overflow: hidden; border: 1px solid #dfe6e9; background: #fff;">
+                    {% with media_url=program.media_file.url|lower %}
+                    {% if '.mp4' in media_url or '.mov' in media_url or '.webm' in media_url %}
+                    <video controls style="width: 100%; display: block; max-height: 320px; object-fit: cover;">
+                        <source src="{{ program.media_file.url }}">
+                        متصفحك لا يدعم تشغيل الفيديو.
+                    </video>
+                    {% else %}
+                    <img src="{{ program.media_file.url }}" alt="مرفق البرنامج التدريبي"
+                        style="width: 100%; display: block; max-height: 320px; object-fit: cover;">
+                    {% endif %}
+                    {% endwith %}
+                </div>
+                {% endif %}
             </div>
             {% empty %}
             <p style="color: #7f8c8d; text-align: center; font-size: 16px;">لا يوجد برامج تدريبية مضافة لهذا اللاعب بعد.
@@ -256,6 +271,21 @@
             <div class="program-block" style="border-right-color: #e74c3c;">
                 <h4>📌 {{ diet.title }}</h4>
                 <div class="program-text">{{ diet.meals_details }}</div>
+                {% if diet.media_file %}
+                <div style="margin-top: 12px; border-radius: 10px; overflow: hidden; border: 1px solid #dfe6e9; background: #fff;">
+                    {% with media_url=diet.media_file.url|lower %}
+                    {% if '.mp4' in media_url or '.mov' in media_url or '.webm' in media_url %}
+                    <video controls style="width: 100%; display: block; max-height: 320px; object-fit: cover;">
+                        <source src="{{ diet.media_file.url }}">
+                        متصفحك لا يدعم تشغيل الفيديو.
+                    </video>
+                    {% else %}
+                    <img src="{{ diet.media_file.url }}" alt="مرفق البرنامج الغذائي"
+                        style="width: 100%; display: block; max-height: 320px; object-fit: cover;">
+                    {% endif %}
+                    {% endwith %}
+                </div>
+                {% endif %}
             </div>
             {% empty %}
             <p style="color: #7f8c8d; text-align: center; font-size: 16px;">لا يوجد برامج غذائية مضافة لهذا اللاعب بعد.

@@ -62,6 +62,24 @@
             text-align: right;
         }
 
+        .sidebar-chat-link {
+            display: block;
+            width: 100%;
+            padding: 15px 10px;
+            color: #cbd5e1;
+            font-size: 16px;
+            border-bottom: 1px solid #2c3e50;
+            text-align: right;
+            text-decoration: none;
+            transition: 0.3s;
+            margin-bottom: 15px;
+        }
+
+        .sidebar-chat-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #2ecc71;
+        }
+
         .logout-btn {
             margin-top: auto;
             background-color: #c0392b;
@@ -253,6 +271,29 @@
             line-height: 1.6;
         }
 
+        .coach-chat-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 24px;
+            padding: 12px 18px;
+            background: linear-gradient(135deg, #2563eb, #16a34a);
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 999px;
+            font-size: 15px;
+            font-weight: bold;
+            box-shadow: 0 10px 22px rgba(37, 99, 235, 0.2);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+        }
+
+        .coach-chat-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 14px 28px rgba(22, 163, 74, 0.22);
+            opacity: 0.96;
+        }
+
         .coach-gallery-section {
             margin-top: 18px;
         }
@@ -311,6 +352,10 @@
 
         <img src="{% static 'images/trainee.jpg' %}" alt="البطل" class="gym-player-img">
 
+        {% if coach_user %}
+        <a href="{% url 'chat_room' coach_user.id %}" class="sidebar-chat-link">💬 مراسلة المدرب</a>
+        {% endif %}
+
         <a href="/trainee/logout/" class="logout-btn">تسجيل الخروج 🔙</a>
     </div>
 
@@ -346,6 +391,21 @@
                 <div class="block-sardi">
                     <h4>📌 {{ program.title }}</h4>
                     <p>{{ program.exercises_details }}</p>
+                    {% if program.media_file %}
+                    <div style="margin-top: 12px; border-radius: 10px; overflow: hidden; border: 1px solid #dfe6e9; background: #fff;">
+                        {% with media_url=program.media_file.url|lower %}
+                        {% if '.mp4' in media_url or '.mov' in media_url or '.webm' in media_url %}
+                        <video controls style="width: 100%; display: block; max-height: 320px; object-fit: cover;">
+                            <source src="{{ program.media_file.url }}">
+                            متصفحك لا يدعم تشغيل الفيديو.
+                        </video>
+                        {% else %}
+                        <img src="{{ program.media_file.url }}" alt="مرفق البرنامج التدريبي"
+                            style="width: 100%; display: block; max-height: 320px; object-fit: cover;">
+                        {% endif %}
+                        {% endwith %}
+                    </div>
+                    {% endif %}
                 </div>
                 {% empty %}
                 <p style="color: #7f8c8d; text-align: center;">لم يقم الكوتش بنشر أي تمارين لك بعد.</p>
@@ -358,6 +418,21 @@
                 <div class="block-sardi diet-border">
                     <h4>📌 {{ diet.title }}</h4>
                     <p>{{ diet.meals_details }}</p>
+                    {% if diet.media_file %}
+                    <div style="margin-top: 12px; border-radius: 10px; overflow: hidden; border: 1px solid #dfe6e9; background: #fff;">
+                        {% with media_url=diet.media_file.url|lower %}
+                        {% if '.mp4' in media_url or '.mov' in media_url or '.webm' in media_url %}
+                        <video controls style="width: 100%; display: block; max-height: 320px; object-fit: cover;">
+                            <source src="{{ diet.media_file.url }}">
+                            متصفحك لا يدعم تشغيل الفيديو.
+                        </video>
+                        {% else %}
+                        <img src="{{ diet.media_file.url }}" alt="مرفق البرنامج الغذائي"
+                            style="width: 100%; display: block; max-height: 320px; object-fit: cover;">
+                        {% endif %}
+                        {% endwith %}
+                    </div>
+                    {% endif %}
                 </div>
                 {% empty %}
                 <p style="color: #7f8c8d; text-align: center;">لم يقم الكوتش بنشر أي وجبات لك بعد.</p>
@@ -434,6 +509,8 @@
                     <li>🏆 Online Coach | مدرب أونلاين معتمد</li>
                 </ul>
 
+
+
                 <div class="coach-gallery-section">
                     <h3>📜 الشهادات والاعتمادات</h3>
                     <div class="coach-gallery-grid">
@@ -497,3 +574,33 @@
 </body>
 
 </html>
+<script>
+    let previousUnreadCount = 0;
+
+    async function checkUnreadMessages() {
+        try {
+            const response = await fetch("{% url 'check_unread_messages' %}", {
+                method: "GET",
+                credentials: "same-origin"
+            });
+
+            if (!response.ok) return;
+
+            const data = await response.json();
+            const unreadCount = data.unread_count || 0;
+
+            if (unreadCount > previousUnreadCount) {
+                new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3').play();
+            }
+
+            previousUnreadCount = unreadCount;
+        } catch (error) {
+            console.error("Unread message check failed:", error);
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        checkUnreadMessages();
+        setInterval(checkUnreadMessages, 5000);
+    });
+</script>

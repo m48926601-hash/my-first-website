@@ -45,6 +45,7 @@ class DietProgram(models.Model):
     trainee = models.ForeignKey(Trainee, on_delete=models.CASCADE, verbose_name="المتدرب")
     title = models.CharField(max_length=100, verbose_name="عنوان اليوم (مثال: اليوم الأول)")
     meals_details = models.TextField(verbose_name="تفاصيل الوجبات")
+    media_file = models.FileField(upload_to='diet_media/', blank=True, null=True)
     
     class Meta:
         verbose_name = "برنامج غذائي"
@@ -57,6 +58,7 @@ class TrainingProgram(models.Model):
     trainee = models.ForeignKey(Trainee, on_delete=models.CASCADE, verbose_name="المتدرب")
     title = models.CharField(max_length=100, verbose_name="عنوان اليوم (مثال: يوم الظهر والبايسبس)")
     exercises_details = models.TextField(verbose_name="تفاصيل التمارين")
+    media_file = models.FileField(upload_to='training_media/', blank=True, null=True)
     
     class Meta:
         verbose_name = "برنامج تدريبي"
@@ -64,3 +66,20 @@ class TrainingProgram(models.Model):
 
     def __str__(self):
         return f"{self.trainee.name} - {self.title}"
+
+
+class ChatMessage(models.Model):
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name="sent_chat_messages", verbose_name="المرسل")
+    receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name="received_chat_messages", verbose_name="المستقبل")
+    message_text = models.TextField(blank=True, null=True, verbose_name="نص الرسالة")
+    media_file = models.FileField(upload_to='chat_media/', blank=True, null=True, verbose_name="ملف مرفق")
+    timestamp = models.DateTimeField(auto_now_add=True, verbose_name="وقت الإرسال")
+    is_read = models.BooleanField(default=False, verbose_name="تمت القراءة")
+
+    class Meta:
+        verbose_name = "رسالة محادثة"
+        verbose_name_plural = "رسائل المحادثة"
+        ordering = ["timestamp"]
+
+    def __str__(self):
+        return f"{self.sender} -> {self.receiver} @ {self.timestamp:%Y-%m-%d %H:%M}"

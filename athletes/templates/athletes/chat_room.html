@@ -1,0 +1,301 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المحادثة | {{ chat_header_name }}</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(180deg, #eef2f7 0%, #f8fafc 100%);
+            margin: 0;
+            padding: 0;
+        }
+
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            max-width: 800px;
+            margin: 0 auto;
+            background:
+                linear-gradient(rgba(255, 255, 255, 0.78), rgba(255, 255, 255, 0.78)),
+                radial-gradient(circle at 20% 20%, rgba(234, 88, 12, 0.04) 0, rgba(234, 88, 12, 0.04) 2px, transparent 2px),
+                radial-gradient(circle at 80% 30%, rgba(34, 197, 94, 0.04) 0, rgba(34, 197, 94, 0.04) 2px, transparent 2px),
+                #f8fafc;
+            background-size: auto, 18px 18px, 18px 18px, auto;
+            box-shadow: 0 8px 30px rgba(15, 23, 42, 0.08);
+        }
+
+        .chat-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 14px 22px;
+            background: linear-gradient(135deg, #1e293b, #334155);
+            border-bottom: none;
+        }
+
+        .chat-header img {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #f97316;
+        }
+
+        .chat-title-wrap h1 {
+            margin: 0;
+            font-size: 1.1rem;
+            color: #fff;
+        }
+
+        .chat-title-wrap p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: #cbd5e1;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .msg-row {
+            display: flex;
+            width: 100%;
+        }
+
+        .msg-row.sent {
+            justify-content: flex-start;
+        }
+
+        .msg-row.received {
+            justify-content: flex-end;
+        }
+
+        .msg-bubble {
+            max-width: 65%;
+            padding: 12px 14px;
+            border-radius: 14px;
+            font-size: 0.95rem;
+            position: relative;
+            box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
+            line-height: 1.5;
+        }
+
+        .msg-row.sent .msg-bubble {
+            background: linear-gradient(135deg, #ea580c, #fb923c);
+            color: #fff;
+            border-radius: 15px 15px 0 15px;
+        }
+
+        .msg-row.received .msg-bubble {
+            background: #fff;
+            color: #0f172a;
+            border-radius: 15px 15px 15px 0;
+        }
+
+        .msg-row.sent .msg-time {
+            color: rgba(255, 255, 255, 0.75);
+        }
+
+        .msg-time {
+            display: block;
+            font-size: 0.75rem;
+            color: #64748b;
+            text-align: left;
+            margin-top: 6px;
+        }
+
+        .chat-footer {
+            padding: 12px 18px;
+            background: linear-gradient(180deg, #f8fafc, #eef2f7);
+            border-top: none;
+        }
+
+        .chat-form {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: none;
+            border-radius: 25px;
+            outline: none;
+            font-size: 0.95rem;
+            background: #f1f5f9;
+            box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.06);
+        }
+
+        .btn-send {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: #fff;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 999px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 6px 18px rgba(34, 197, 94, 0.35);
+            transition: transform 0.2s ease;
+        }
+
+        .btn-send:hover {
+            transform: translateY(-1px);
+        }
+
+        .media-box img,
+        .media-box video {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 10px;
+            margin-top: 5px;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+<div class="chat-container">
+    <header class="chat-header">
+        <div class="chat-title-wrap">
+            <h1>{{ chat_header_name }}</h1>
+            <p>{{ chat_header_subtitle }}</p>
+        </div>
+    </header>
+
+    <div class="chat-messages" id="chatMessages">
+        {% for message in chat_history %}
+            <div class="msg-row {% if message.sender == request.user %}sent{% else %}received{% endif %}">
+                <div class="msg-bubble">
+                    {% if message.message_text %}
+                        <p style="margin:0;">{{ message.message_text }}</p>
+                    {% endif %}
+                    
+                    {% if message.media_file %}
+                        <div class="media-box">
+                            {% if '.mp4' in message.media_file.url or '.mov' in message.media_file.url %}
+                                <video controls><source src="{{ message.media_file.url }}"></video>
+                            {% else %}
+                                <a href="{{ message.media_file.url }}" target="_blank">
+                                    <img src="{{ message.media_file.url }}" alt="مرفق">
+                                </a>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                    <span class="msg-time">{{ message.timestamp|date:"H:i" }}</span>
+                </div>
+            </div>
+        {% empty %}
+            <p id="noMsgText" style="text-align: center; color: #8696a0; margin-top: 20px;">لا توجد رسائل بعد. ابدأ المحادثة الآن.</p>
+        {% endfor %}
+    </div>
+
+    <footer class="chat-footer" style="display: flex; flex-direction: column;">
+        <div id="filePreviewContainer" style="display: none; background: #e1f5fe; padding: 8px 15px; border-radius: 8px; margin-bottom: 10px; font-size: 0.9rem; align-items: center; justify-content: space-between; border: 1px solid #b3e5fc;">
+            <span id="fileNameDisplay" style="color: #0277bd; font-weight: bold;">📎 ملف جاهز: </span>
+            <button type="button" id="removeFileBtn" style="background: none; border: none; color: #d32f2f; cursor: pointer; font-size: 1.1rem; font-weight: bold;" title="إلغاء المرفق">✖</button>
+        </div>
+
+        <form class="chat-form" id="chatForm" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="file" id="mediaFileInput" name="media_file" accept="image/*,video/*" style="display: none;">
+            <button type="button" onclick="document.getElementById('mediaFileInput').click()" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">📎</button>
+            <input type="text" class="chat-input" id="msgInput" name="message_text" placeholder="اكتب رسالتك هنا..." autocomplete="off">
+            <button type="submit" class="btn-send">إرسال</button>
+        </form>
+    </footer>
+</div>
+
+<script>
+    const chatMessages = document.getElementById('chatMessages');
+    const chatForm = document.getElementById('chatForm');
+    
+    const fileInput = document.getElementById('mediaFileInput');
+    const filePreviewContainer = document.getElementById('filePreviewContainer');
+    const fileNameDisplay = document.getElementById('fileNameDisplay');
+    const removeFileBtn = document.getElementById('removeFileBtn');
+
+    // إظهار اسم الملف بس تختار صورة
+    fileInput.addEventListener('change', function() {
+        if (this.files && this.files.length > 0) {
+            fileNameDisplay.textContent = '📎 تم إرفاق: ' + this.files[0].name;
+            filePreviewContainer.style.display = 'flex';
+        } else {
+            filePreviewContainer.style.display = 'none';
+        }
+    });
+
+    // زر الإلغاء (X) بيمسح الصورة المحددة وبيرجع بيخفي الشريط
+    removeFileBtn.addEventListener('click', function() {
+        fileInput.value = ''; 
+        filePreviewContainer.style.display = 'none';
+    });
+    // نزول السكرول لآخر المحادثة تلقائياً
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    chatForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const msgInput = document.getElementById('msgInput');
+        const fileInput = document.getElementById('mediaFileInput');
+        
+        if (!msgInput.value.trim() && !fileInput.files[0]) return;
+
+        const formData = new FormData(chatForm);
+
+        try {
+            const response = await fetch(window.location.href, {
+                method: "POST",
+                body: formData,
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest"
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                
+                // إخفاء نص "لا توجد رسائل"
+                if(document.getElementById('noMsgText')) document.getElementById('noMsgText').remove();
+
+                // بناء فقاعة الرسالة الجديدة فوراً بالشاشة
+                let mediaHtml = '';
+                if (data.media_url) {
+                    if (data.media_url.includes('.mp4') || data.media_url.includes('.mov')) {
+                        mediaHtml = `<div class="media-box"><video controls><source src="${data.media_url}"></video></div>`;
+                    } else {
+                        mediaHtml = `<div class="media-box"><img src="${data.media_url}"></div>`;
+                    }
+                }
+
+                const newMsg = `
+                    <div class="msg-row sent">
+                        <div class="msg-bubble">
+                            ${data.message_text ? `<p style="margin:0;">${data.message_text}</p>` : ''}
+                            ${mediaHtml}
+                            <span class="msg-time">${data.timestamp}</span>
+                        </div>
+                    </div>
+                `;
+                
+                chatMessages.insertAdjacentHTML('beforeend', newMsg);
+                chatForm.reset(); // تفريغ الحقول والنصوص
+                filePreviewContainer.style.display = 'none';
+                chatMessages.scrollTop = chatMessages.scrollHeight; // نزول السكرول
+            }
+        } catch (error) {
+            console.error("حدث خطأ أثناء الإرسال:", error);
+        }
+    });
+</script>
+</body>
+</html>

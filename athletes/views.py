@@ -1,10 +1,14 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.http import JsonResponse
+from django.db.models import Q
+from django.templatetags.static import static
 from django.utils import timezone
+import json
 from datetime import timedelta
-from .models import Trainee, DietProgram, TrainingProgram
+from .models import Trainee, DietProgram, TrainingProgram, ChatMessage
 
 # ====================================================
 # 1. الصفحات العامة وتسجيل الدخول والخروج
@@ -86,11 +90,14 @@ def trainee_dashboard_view(request):
         diet_programs = DietProgram.objects.filter(trainee=trainee)
     except Trainee.DoesNotExist:
         return redirect('coach_dashboard') # حماية من دخول الكابتن لهون بالخطأ
+
+    coach_user = User.objects.filter(is_staff=True).exclude(id=request.user.id).first()
         
     context = {
         'trainee': trainee,
         'training_programs': training_programs,
         'diet_programs': diet_programs,
+        'coach_user': coach_user,
     }
     return render(request, 'athletes/trainee_dashboard.html', context)
 
@@ -184,6 +191,7 @@ def add_training_view(request):
         trainee_id = request.POST.get('trainee_id')
         title = request.POST.get('title')
         exercises_details = request.POST.get('exercises_details')
+        media_file = request.FILES.get('media_file')
         
         # حماية ضد إرسال قائمة فارغة
         if not trainee_id:
@@ -197,7 +205,8 @@ def add_training_view(request):
             TrainingProgram.objects.create(
                 trainee=selected_trainee,
                 title=title,
-                exercises_details=exercises_details
+                exercises_details=exercises_details,
+                media_file=media_file
             )
             return redirect('coach_dashboard')
         except Trainee.DoesNotExist:
@@ -216,6 +225,7 @@ def add_diet_view(request):
         trainee_id = request.POST.get('trainee_id')
         title = request.POST.get('title')
         meals_details = request.POST.get('meals_details')
+        media_file = request.FILES.get('media_file')
         
         # حماية ضد إرسال قائمة فارغة
         if not trainee_id:
@@ -229,7 +239,8 @@ def add_diet_view(request):
             DietProgram.objects.create(
                 trainee=selected_trainee,
                 title=title,
-                meals_details=meals_details
+                meals_details=meals_details,
+                media_file=media_file
             )
             return redirect('coach_dashboard')
         except Trainee.DoesNotExist:
@@ -283,3 +294,78 @@ def trainee_register_view(request):
         return redirect('trainee_dashboard')
         
     return render(request, 'athletes/trainee_register.html')
+
+
+@login_required
+def chat_room(request, other_user_id):
+    other_user = get_object_or_404(User, id=other_user_id)
+    
+    # 1. معالجة إرسال رسالة جديدة (POST) عن طريق AJAX
+    if request.method == 'POST':
+        message_text = request.POST.get('message_text', '').strip()
+        media_file = request.FILES.get('media_file', None)
+        
+        if message_text or media_file:
+            msg = ChatMessage.objects.create(
+                sender=request.user,
+                receiver=other_user,
+                message_text=message_text,
+                media_file=media_file
+            )
+            return JsonResponse({
+                'status': 'success',
+                'message_text': msg.message_text,
+                'media_url': msg.media_file.url if msg.media_file else '',
+                'sender_id': msg.sender.id,
+                'timestamp': msg.timestamp.strftime('%H:%M')
+            })
+        return JsonResponse({'status': 'error', 'message': 'رسالة فارغة'}, status=400)
+
+    # 2. تحويل الرسائل المستقبلة إلى "مقروءة" بمجرد فتح الغرفة
+    ChatMessage.objects.filter(sender=other_user, receiver=request.user, is_read=False).update(is_read=True)
+
+    # 3. جلب التاريخ الكامل للمحادثة (الصادرة والواردة معاً)
+    chat_history = ChatMessage.objects.filter(
+        Q(sender=request.user, receiver=other_user) | 
+        Q(sender=other_user, receiver=request.user)
+    ).order_by('timestamp')
+
+    # 4. تحديد اسم وصورة الترويسة ديناميكياً حسب من يفتح الشات
+    # 4. تحديد اسم وصورة الترويسة ديناميكياً حسب من يفتح الشات
+    if request.user.is_superuser or hasattr(request.user, 'coach'):
+        try:
+            chat_header_name = other_user.trainee.name if other_user.trainee.name else other_user.get_full_name() or other_user.username
+            
+            # 💡 التعديل هنا: استخدام front_image بدل profile_image
+            if hasattr(other_user.trainee, 'front_image') and other_user.trainee.front_image:
+                chat_header_image_url = other_user.trainee.front_image.url
+            else:
+                chat_header_image_url = '/static/images/trainee.jpg' # أو صورة افتراضية
+        except:
+            chat_header_name = other_user.username
+            chat_header_image_url = '/static/images/coach3.PNG'
+            
+        chat_header_subtitle = "متدرب مشترك"
+    else:
+        # الحالي هو المتدرب -> يعرض دائماً الكابتن طارق
+        chat_header_name = "الكابتن طارق راشد"
+        chat_header_image_url = '/static/images/coach3.PNG'
+        chat_header_subtitle = "المدرب الشخصي"
+
+    return render(request, 'athletes/chat_room.html', {
+        'other_user': other_user,
+        'chat_history': chat_history,
+        'chat_header_name': chat_header_name,
+        'chat_header_image_url': chat_header_image_url,
+        'chat_header_subtitle': chat_header_subtitle,
+    })
+
+
+@login_required
+# ضف هذا التابع في نهاية ملف views.py
+def check_unread_messages(request):
+    if request.user.is_authenticated:
+        # حساب عدد الرسائل التي لم تُقرأ وموجهة للمستخدم الحالي
+        count = ChatMessage.objects.filter(receiver=request.user, is_read=False).count()
+        return JsonResponse({'unread_count': count})
+    return JsonResponse({'unread_count': 0})

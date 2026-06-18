@@ -21,4 +21,7 @@ urlpatterns = [
     path('trainee/register/', views.trainee_register_view, name='trainee_register'),   
     # السلك الجديد للتعديل:
     path('coach/trainees/<int:trainee_id>/edit/', views.edit_trainee_view, name='edit_trainee'),
+    path('chat/<int:other_user_id>/', views.chat_room, name='chat_room'),
+    path('chat/unread-count/', views.check_unread_messages, name='check_unread_messages'),
+    path('check-unread/', views.check_unread_messages, name='check_unread_messages'),
 ]
